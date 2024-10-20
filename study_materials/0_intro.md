@@ -26,7 +26,7 @@ env | grep "^ROS_"
 
 Вот и все переменные, которые начинаются с "ROS_":
 
-```bash
+```
 ROS_DISTRO=noetic
 ROS_ETC_DIR=/opt/ros/noetic/etc/ros
 ROS_PACKAGE_PATH=/opt/ros/noetic/share
