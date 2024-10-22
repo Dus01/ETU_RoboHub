@@ -38,10 +38,10 @@ while True:
 
         if len(approx) == 4:
             x, y, w, h = cv2.boundingRect(approx)
-            aspect_ratio = float(w) / h
-            print(aspect_ratio)
+            square = w * h
+            print("Ширина контура %f, длина контура %f.Площадь контура составляет %f" %(w, h, square))
 
-            if 0.9 <= aspect_ratio <= 1.1:  
+            if square >= 10000:  
                 center_x = int(x + w / 2)
                 center_y = int(y + h / 2)
 
