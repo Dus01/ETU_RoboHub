@@ -42,7 +42,7 @@
 Let's Go! Cоздаем простейшую систему с топиком и узлами:
 - запуск ROS мастера, вся систем зиждется на нем и без него ничего не работает:
 ```bash
-rosсore
+roscore
 ```
 - узел из пакета `rospy_tutorials` с именем `talker` командой:
 ```bash
@@ -50,7 +50,7 @@ rosrun rospy_tutorials talker
 ```
 - узел из пакета `rospy_tutorials` с именем `listener` командой:
 ```bash
-rosrun rospy_tutorials listener 
+rosrun rospy_tutorials listener
 ```
 
 > Запустите узлы утилиты. Не забывайте про то, что если узел при запуске работает бесконечно, то для запуска другого узла нужен новый терминал.
