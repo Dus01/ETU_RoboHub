@@ -4,14 +4,14 @@
 
 - [Содержание](#содержание)
 - [Распространенные практики](#распространенные-практики)
-  - [Объединение узлов под одним пространством имен](#объединение-узлов-под-одним-пространством-имен)
-  - [Мапирование топиков](#мапирование-топиков)
-  - [Подключение других launch-файлов](#подключение-других-launch-файлов)
-  - [Создание опций для launch-файлов](#создание-опций-для-launch-файлов)
+    - [Объединение узлов под одним пространством имен](#объединение-узлов-под-одним-пространством-имен)
+    - [Мапирование топиков](#мапирование-топиков)
+    - [Подключение других launch-файлов](#подключение-других-launch-файлов)
+    - [Создание опций для launch-файлов](#создание-опций-для-launch-файлов)
 - [ROS параметры](#ros-параметры)
 - [ROS Python параметры](#ros-python-параметры)
 - [Управление параметрами](#управление-параметрами)
-  - [Сохранение и загрузка параметров](#сохранение-и-загрузка-параметров)
+    - [Сохранение и загрузка параметров](#сохранение-и-загрузка-параметров)
 - [Что нужно сделать?](#что-нужно-сделать)
 - [Вопросики](#вопросики)
 - [С чем познакомились?](#с-чем-познакомились)
@@ -343,9 +343,9 @@ else:
 Сейчас хочется обратить внимание на приватные параметры с точки зрения практики. Обычно узлы стартуют с помощью launch-файлов, поэтому задаются параметры внутри с помощью тэгов `<param>`. Пример из одного из файлов планера:
 
 ```xml
-    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
-    <param name="planner_frequency" value="1.0" />
-    <param name="planner_patience" value="5.0" />
+    <param name="planning_plugin" value="ompl_interface/OMPLPlanner" />
+    <param name="planner_configs/BITstar/samples_per_batch" value="100" />
+    <param name="use_graph_pruning" value="1" />
 ```
 
 Таким образом задаются локальные параметры (с учетом ns).
@@ -353,7 +353,7 @@ else:
 Еще немного для понимания, пример из драйвера камеры (внутри тэга `<node>` параметры задаются приватными!):
 
 ```xml
-<node ns="stereo" name="left_camera" pkg="usb_cam" type="usb_cam_node" output="screen" >
+<node name="main_camera" pkg="usb_cam" type="usb_cam_node" output="screen" >
     <param name="video_device" value="/dev/video0" />
 	<param name="image_width" value="640" />
 	<param name="image_height" value="480" />
@@ -405,7 +405,7 @@ rosparam list
 
 Как видим, у нас появилась полная копия параметров, только в новом пространстве имен. Еще немного практики для понимания пространства имен
 
-Сохраним параметры тольько из `sample_ns`
+Сохраним параметры только из `sample_ns`
 
 ```bash
 rosparam dump -v '/tmp/my_dump_special_ns.yaml' '/sample_ns'
@@ -475,7 +475,7 @@ rosparam list
 Теперь к практическим навыкам - вспомним, что запуск launch-файла запускает также и мастера, если тот ранее не был запущен. А сервер параметров завязан на мастера. Значит может понадобиться функционал загрузки параметров на момент запуска узлов:
 
 ```xml
-<rosparam file="config/costmap_common.yaml" command="load" ns="global_costmap" />
+<rosparam file="$(find panda_moveit_config)/config/ompl_planning.yaml" command="load" ns="ompl_planning" />
 ```
 
 В этом примере показан тэг `<rosparam>` и его параметры. На самом деле, параметры схожи с опциями утилиты:
@@ -490,11 +490,11 @@ rosparam list
 ros_glob_param: Hi, I am global =)
 rosdistro: 'melodic'
 roslaunch:
-  uris: {host_user_vb__38669: 'http://user-vb:38669/'}
+    uris: {host_user_vb__38669: 'http://user-vb:38669/'}
 run_id: 1b078410-b789-11e8-91b9-0800278832b1
 sample_ns:
-  params_study: {ros_priv_param: 'Hi, I am private =)'}
-  ros_loc_param: Hi, I am local =)
+    params_study: {ros_priv_param: 'Hi, I am private =)'}
+    ros_loc_param: Hi, I am local =)
 ```
 
 ## Что нужно сделать?
@@ -509,31 +509,24 @@ sample_ns:
 
 ```xml
 <launch>
-  <arg name="model" default="waffle" doc="model type [burger, waffle, waffle_pi]"/>
-  <arg name="x_pos" default="-2.0"/>
-  <arg name="y_pos" default="-0.5"/>
-  <arg name="z_pos" default="0.0"/>
-  
-  <param name="model" value="$(arg model)"/>
 
-  <arg name="gz_gui" default="false"/>
+    <arg name="arm_id" default="panda" />
+    <arg name="pipeline" default="ompl" />
+    <arg name="debug" default="false" />
+    <arg name="load_gripper" default="true" />
+    <arg name="use_rviz" default="true" />
 
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_world.world"/>
-    <arg name="paused" value="false"/>
-    <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="$(arg gz_gui)"/>
-    <arg name="headless" value="false"/>
-    <arg name="debug" value="false"/>
-  </include>
+    <include file="$(dirname)/move_group.launch">
+        <arg name="allow_trajectory_execution" value="true" />
+        <arg name="info" value="true" />
+    </include>
 
-  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    <include file="$(dirname)/moveit_rviz.launch" if="$(arg use_rviz)">
+        <arg name="rviz_tutorial" value="true"/>
+        <arg name="rviz_config" value="$(dirname)/moveit.rviz"/>
+        <arg name="debug" value="$(arg debug)"/>
+    </include>
 
-  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
-
-  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
-    <param name="publish_frequency" type="double" value="50.0" />
-  </node>
 </launch>
 ```
 

@@ -1,13 +1,15 @@
 # Я, ROS и мой первый пакет
 
 ## Содержание
+
+- [Содержание](#содержание)
 - [Основная информация](#основная-информация)
-  - [Подготовка рабочего пространства (workspace -\> ws)](#подготовка-рабочего-пространства-workspace---ws)
-    - [Добавить подключение рабочего пространства в сессию терминала](#добавить-подключение-рабочего-пространства-в-сессию-терминала)
-  - [Проверка установки](#проверка-установки)
-  - [Пространство готово - теперь создаем пакет](#пространство-готово---теперь-создаем-пакет)
-  - [Сборка пакета](#сборка-пакета)
-  - [Первый узел](#первый-узел)
+    - [Подготовка рабочего пространства (workspace -\> ws)](#подготовка-рабочего-пространства-workspace---ws)
+        - [Добавить подключение рабочего пространства в сессию терминала](#добавить-подключение-рабочего-пространства-в-сессию-терминала)
+    - [Проверка установки](#проверка-установки)
+    - [Пространство готово - теперь создаем пакет](#пространство-готово---теперь-создаем-пакет)
+    - [Сборка пакета](#сборка-пакета)
+    - [Первый узел](#первый-узел)
 - [Что нужно сделать](#что-нужно-сделать)
 - [Вопросики](#вопросики)
 - [С чем познакомились?](#с-чем-познакомились)
@@ -115,23 +117,23 @@ catkin_create_pkg study_pkg rospy
 ```xml
 <?xml version="1.0"?>
 <package format="2">
-  <name>study_pkg</name>
-  <version>0.0.0</version>
-  <description>The study_pkg package</description>
-  <maintainer email="user@todo.todo">user</maintainer>
-  <license>TODO</license>
+    <name>study_pkg</name>
+    <version>0.0.0</version>
+    <description>The study_pkg package</description>
+    <maintainer email="user@todo.todo">user</maintainer>
+    <license>TODO</license>
 ```
 
 Зависимости (инструмент сборки, сборка, экспорт, runtime (exec) - выполнение)
 
 ```xml
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>rospy</build_export_depend>
-  <exec_depend>roscpp</exec_depend>
-  <exec_depend>rospy</exec_depend>
+    <buildtool_depend>catkin</buildtool_depend>
+    <build_depend>roscpp</build_depend>
+    <build_depend>rospy</build_depend>
+    <build_export_depend>roscpp</build_export_depend>
+    <build_export_depend>rospy</build_export_depend>
+    <exec_depend>roscpp</exec_depend>
+    <exec_depend>rospy</exec_depend>
 ```
 
 Остальное можно также наблюдать внутри комметариев формата xml. Там также приведены некоторые описания строк и блоков.
@@ -149,7 +151,7 @@ project(study_pkg)
 
 ```cmake
 find_package(catkin REQUIRED COMPONENTS
-  rospy
+    rospy
 )
 ```
 
